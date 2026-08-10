@@ -33,7 +33,7 @@ public class AuthenticationService {
     @Autowired
     private JwtService jwtService;
 
-    private UserDto registerNormalUser(RegisterRequestDto registerRequestDto){
+    public UserDto registerNormalUser(RegisterRequestDto registerRequestDto){
         if(userRepository.findByUsername(registerRequestDto.getUsername()).isPresent()){
             throw new RuntimeException("Username already exists");
         }
