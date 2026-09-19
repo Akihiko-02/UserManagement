@@ -8,7 +8,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
 jwt:
   secret: VGhpc0lzQURlbW9TZWNyZXRLRXlGb3JQcmFjdGljZU9ubHk=
   expiration: 3600000
 
+logging:
+  level:
+    org.springframework.security: DEBUG

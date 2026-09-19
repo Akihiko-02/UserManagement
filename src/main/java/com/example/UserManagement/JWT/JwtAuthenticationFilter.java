@@ -60,6 +60,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(userId != null  && SecurityContextHolder.getContext().getAuthentication() == null) {
             var userDetails = userRepository.findById(userId)
                     .orElseThrow(()-> new RuntimeException("User not found"));
+            System.out.println("USER ID FROM TOKEN: " + userId);
+            System.out.println("TOKEN VALID: " + jwtService.isTokenValid(jwtToken,userDetails));
+            System.out.println("AUTHORITIES: " + userDetails.getRoles());
             if(jwtService.isTokenValid(jwtToken,userDetails)){
                 List<SimpleGrantedAuthority> authorities = userDetails.getRoles().stream()
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
@@ -67,6 +70,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println("AUTHENTICATION SET: " +
+                        SecurityContextHolder.getContext().getAuthentication().isAuthenticated());
+
+                System.out.println("AUTH USER: " +
+                        SecurityContextHolder.getContext().getAuthentication().getName());
+
+                System.out.println("AUTH AUTHORITIES: " +
+                        SecurityContextHolder.getContext().getAuthentication().getAuthorities());
             }
         }
         filterChain.doFilter(request, response);

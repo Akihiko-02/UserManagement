@@ -1,16 +1,16 @@
 import { useState } from "react"
-import { Link, useRoutes } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 import "../styles/signup.css";
 
-const singup = ()=>{
+const signup = ()=>{
 
     const[error,setError] = useState('');
     const[username,setUsername] = useState('');
     const[email,setEmail] = useState('');
     const[password,setPassword] = useState('');
     const[confirmpassword,setConfirmPassword]=useState('');
-    const navigate = userNavigate();
+    const navigate = useNavigate();
 
     const handleSignup = async (e)=>{
         e.preventDefault();
@@ -42,7 +42,7 @@ const singup = ()=>{
                     <form action="" onSubmit={handleSignup}>
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
-                            <input type="text" id="username" value={username} onChange={(e)=> setUsername(e.target.value)} required/>
+                            <input type="text" id="username" value={username} onChange={(e)=> setUsername(e.target.value)} autoComplete="username" required/>
 
                         </div>
                         <div className="form-group">
@@ -51,11 +51,11 @@ const singup = ()=>{
                         </div>
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
-                            <input type="password" id="password" value={password} onChange={(e)=> setPassword(e.target.value)} required/>
+                            <input type="password" id="password" value={password} onChange={(e)=> setPassword(e.target.value)} autoComplete="new-password" required/>
                         </div>
                         <div className="form-group">
                             <label htmlFor="confirm-password">Confirm Password</label>
-                            <input type="password" id="confirm-password" value={confirmpassword} onChange={(e)=> setConfirmPassword(e.target.value)} required/>
+                            <input type="password" id="confirm-password" value={confirmpassword} onChange={(e)=> setConfirmPassword(e.target.value)} autoComplete="new-password" required/>
                         </div>
                         <button type="submit" className="signup-button">Sign Up</button>
                         <p>
@@ -66,4 +66,5 @@ const singup = ()=>{
         </div>
     );
 }
-export default singup;
+export default signup;
+

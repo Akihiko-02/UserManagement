@@ -16,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;
@@ -30,18 +30,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         LoginResponseDto loginResponseDto = authenticationService.login(loginRequestDto);
-        ResponseCookie cookie = ResponseCookie.from("JWT",loginResponseDto.getJwtToken())
+
+        ResponseCookie cookie = ResponseCookie.from("JWT", loginResponseDto.getJwtToken())
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(1 * 60 * 60)
                 .sameSite("Strict")
                 .build();
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(loginResponseDto.getUserDto());
+                .body(loginResponseDto);
     }
 
     @PostMapping("/logout")
@@ -49,7 +51,7 @@ public class AuthController {
         return authenticationService.logout();
     }
 
-    @GetMapping("/getcurrentuser")
+    @GetMapping("getcurrentuser")
     public ResponseEntity<?> getCurrentUser(Authentication authentication){
         if(authentication == null){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not Authenticated");

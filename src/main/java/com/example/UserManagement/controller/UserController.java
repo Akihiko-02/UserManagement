@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
@@ -36,6 +36,9 @@ public class UserController {
 
     @PutMapping("/updateuser/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id,@RequestBody UserDto userDto){
+        System.out.println("UPDATE USER CONTROLLER REACHED");
+        System.out.println("UPDATE USER ID: " + id);
+        System.out.println("UPDATE USER DATA: " + userDto.getUsername() + " / " + userDto.getEmail());
         return ResponseEntity.ok(userService.updateUser(id,userDto));
     }
 

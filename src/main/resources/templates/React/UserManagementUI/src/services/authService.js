@@ -11,6 +11,23 @@ const api = axios.create({
 });
 
 
+// Add JWT token to every request
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('jwtToken');
+
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+
 const authService = {
 
     signupNormalUser: async (username, email, password) => {
@@ -36,6 +53,22 @@ const authService = {
                 { username, password }
             );
 
+            console.log("=================================");
+            console.log("LOGIN RESPONSE:", response.data);
+
+            const token = response.data.jwtToken;
+
+            console.log("JWT FROM LOGIN:", token);
+
+            localStorage.setItem('jwtToken', token);
+
+            console.log(
+                "TOKEN SAVED:",
+                localStorage.getItem('jwtToken')
+            );
+
+            console.log("=================================");
+
             const user = await authService.fetchCurrentUser();
 
             return {
@@ -52,7 +85,7 @@ const authService = {
 
     fetchCurrentUser: async () => {
         try {
-            const response = await api.get('/auth/fetchCurrentUser');
+            const response = await api.get('/auth/getcurrentuser');
 
             localStorage.setItem(
                 'user',
@@ -89,11 +122,15 @@ const authService = {
     logout: async () => {
         try {
             await api.post('/auth/logout');
+
             localStorage.removeItem('user');
+            localStorage.removeItem('jwtToken');
 
         } catch (error) {
             console.error("Logout failed", error);
+
             localStorage.removeItem('user');
+            localStorage.removeItem('jwtToken');
         }
     },
 
@@ -108,53 +145,92 @@ const authService = {
         }
     },
 
-    updateProfile: async(userData)=>{
-        try{
-            const response = await api.put(`/users/updateuser/${userData.id}`,userData);
+
+    updateProfile: async(userData) => {
+        try {
+            const response = await api.put(
+                `/users/updateuser/${userData.id}`,
+                userData
+            );
+
             const currentUser = authService.getCurrentUser();
-            const updateUser = {...currentUser,...response.data};
-            localStorage.setItem('user',JSON.stringify(updateUser));
+            const updateUser = {
+                ...currentUser,
+                ...response.data
+            };
+
+            localStorage.setItem(
+                'user',
+                JSON.stringify(updateUser)
+            );
+
         }
-        catch(error){
-            console.error("profile update failed",error);
+        catch(error) {
+            console.error("profile update failed", error);
             throw error;
         }
     },
-    getAllUsers: async()=>{
-        try{
+
+
+    getAllUsers: async() => {
+        try {
             const response = await api.get('/users/getallusers');
             return response.data;
+
         }
-        catch(error){
-            console.error("Failed to fetch all users",error);
+        catch(error) {
+            console.error("Failed to fetch all users", error);
             throw error;
         }
     },
-    deleteUser: async(userId)=>{
-        try{
-            const response = await api.delete(`/users/deleteuser/${userId}`);
+
+
+    deleteUser: async(userId) => {
+        try {
+            const response = await api.delete(
+                `/users/deleteuser/${userId}`
+            );
+
             return response.data;
+
         }
-        catch(error){
-            console.error("Failed to delete user",error);
+        catch(error) {
+            console.error("Failed to delete user", error);
             throw error;
         }
     },
-    changePassword: async(currentPassword, newPassword, confirmPassword)=>{
-        try{
+
+
+    changePassword: async(
+        currentPassword,
+        newPassword,
+        confirmPassword
+    ) => {
+        try {
             const currentUser = authService.getCurrentUser();
-            if(!currentUser || !currentUser.id){
+
+            if(!currentUser || !currentUser.id) {
                 throw new Error('User not found');
             }
-            const response = await api.put(`/users/changepassword/${currentUser.id}`, {
-                currentPassword,
-                newPassword,
-                confirmPassword
-            });
+
+            const response = await api.put(
+                `/users/changepassword/${currentUser.id}`,
+                {
+                    currentPassword,
+                    newPassword,
+                    confirmPassword
+                }
+            );
+
             return response.data;
+
         }
-        catch(error){
-            console.error("Failed to change the password", error);
+        catch(error) {
+            console.error(
+                "Failed to change the password",
+                error
+            );
+
             throw error;
         }
     }
@@ -172,7 +248,10 @@ api.interceptors.response.use(
 
                 case 401:
                     console.error("Unauthorized");
+
                     localStorage.removeItem('user');
+                    localStorage.removeItem('jwtToken');
+
                     window.location.href = '/login';
                     break;
 
@@ -189,12 +268,18 @@ api.interceptors.response.use(
                     break;
 
                 default:
-                    console.error("Request failed:", error.response.status);
+                    console.error(
+                        "Request failed:",
+                        error.response.status
+                    );
             }
 
         } else if (error.request) {
 
-            console.error("No response received", error.request);
+            console.error(
+                "No response received",
+                error.request
+            );
 
         } else {
 

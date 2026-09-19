@@ -1,4 +1,4 @@
-import { act, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {authService} from "../services/authService"
 import '../styles/dashboard.css'
 
@@ -9,13 +9,14 @@ const PasswordChangeModal = ({ isOpen, onClose, onSave})=>{
     const [error, setError] = useState('');
 
     if(!isOpen) return null;
+
     const handleSave = async ()=>{
         if(newPassword !== confirmPassword){
             setError('Password do not match.')
             return;
         }
         try{
-            await authService.changePasword(currentPassword,newPassword,confirmPassword);
+            await authService.changePassword(currentPassword,newPassword,confirmPassword);
             onSave();
             onClose();
         }
@@ -65,7 +66,7 @@ const PasswordChangeModal = ({ isOpen, onClose, onSave})=>{
 };
 
 
-const usersTable = () =>{
+const UsersTable = () =>{
     const [allusers, setAllUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); 
@@ -84,8 +85,10 @@ const usersTable = () =>{
         };
         fetchAllUsers();
     },[]);
+
     if(loading) return <div>Loading users...</div>
     if(error) return <div className="error-message">{error}</div>
+
     const handleDeleteUser = async (userId)=>{
         try{
             await authService.deleteUser(userId);
@@ -96,6 +99,7 @@ const usersTable = () =>{
         }
 
     }
+
     return(
         <div className="users-table-container">
             <h3>Manage All Users</h3>
@@ -109,7 +113,7 @@ const usersTable = () =>{
                     </tr>
                 </thead>
                 <tbody>
-                    {allusers.map(user=>{
+                    {allusers.map(user=>(
                         <tr key={user.id}>
                             <td>{user.id}</td>
                             <td>{user.username}</td>
@@ -124,13 +128,15 @@ const usersTable = () =>{
                                 </button>
                             </td>
                         </tr>
-                    })}
+                    ))}
                 </tbody>
             </table>
         </div>
     );
 };
-const dashboard = ()=>{
+
+
+const Dashboard = ()=>{
     const[user, setUser] = useState(null);
     const[activeSection,setActiveSection]=useState('home');
     const[loading,setLoading] = useState(true);
@@ -150,7 +156,7 @@ const dashboard = ()=>{
                 setEditedUser(currentUser);
 
                 const userRoles = currentUser.roles || [];
-                setIsAdmin(userRoles.include('ROLE_ADMIN'));
+                setIsAdmin(userRoles.includes('ROLE_ADMIN'));
             }
             catch(error){
                 console.error('Error fetching user data',error);
@@ -166,13 +172,15 @@ const dashboard = ()=>{
         setIsEditing(!isEditing);
 
     };
-    const handleInputChange = ()=>{
+
+    const handleInputChange = (e)=>{
         const {name, value} = e.target;
         setEditedUser(prev=>({
             ...prev,
             [name] : value
         }));
     };
+
     const handleSaveProfile =  async ()=>{
         try{
             await authService.updateProfile(editedUser);
@@ -183,10 +191,12 @@ const dashboard = ()=>{
             console.error("failed to update user profile",error)
         }
     };
+
     const handleCancelEdit = ()=>{
         setEditedUser(user);
         setIsEditing(false);
     };
+
     if(loading){
         return <div className="loading-spinner">Loading...</div>
     }
@@ -197,9 +207,11 @@ const dashboard = ()=>{
                 <div className={`dashboard-menu-item ${activeSection === 'home' ? 'active' : ''}`}
                     onClick={()=> setActiveSection('home')}
                 >HOME</div>
+
                 <div className={`dashboard-menu-item ${activeSection === 'profile' ? 'active' : ''}`}
                     onClick={()=> setActiveSection('profile')}
                 >PROFILE</div>
+
                 <div className={`dashboard-menu-item ${activeSection === 'settings' ? 'active' : ''}`}
                     onClick={()=> setActiveSection('settings')}
                 >SETTINGS</div>
@@ -207,9 +219,10 @@ const dashboard = ()=>{
                 {isAdmin && (
                     <div className={`dashboard-menu-item ${activeSection === 'users' ? 'active' : ''}`}
                     onClick={()=> setActiveSection('users')}
-                >USERS</div>
+                    >USERS</div>
                 )}
             </div>
+
             <div className="dashboard-content">
                 {activeSection === 'home' && (
                     <div className="dashboard-home">
@@ -217,9 +230,11 @@ const dashboard = ()=>{
                         <p>Some Content</p>
                     </div>
                 )}
+
                 {activeSection === 'profile' && (
                     <div className="dashboard-profile">
                         <h2>User Profile Information</h2>
+
                         <div className="profile-details">
 
                             <div className="profile-field">
@@ -230,6 +245,7 @@ const dashboard = ()=>{
                                 readOnly={!isEditing}
                                 />
                             </div>
+
                             <div className="profile-field">
                                 <label htmlFor="">Email:</label>
                                 <input type="email" name="email" id="" 
@@ -238,10 +254,12 @@ const dashboard = ()=>{
                                 readOnly={!isEditing}
                                 />
                             </div>
+
                             <div className="profile-actions">
                                 {!isEditing ? (
                                     <>
                                     <button className="btn btn-primary" onClick={handleEditToggle}>EDIT</button>
+
                                     <button className="btn btn-secondary"
                                     onClick={()=> setIsPasswordModalOpen(true)}
                                     >CHANGE PASSWORD</button>
@@ -251,6 +269,7 @@ const dashboard = ()=>{
                                 (<>
                                     <button className="btn btn-primary" 
                                     onClick={handleSaveProfile}>SAVE</button>
+
                                     <button className="btn btn-secondary"
                                     onClick={handleCancelEdit}
                                     >CANCEL</button>
@@ -267,19 +286,23 @@ const dashboard = ()=>{
                         <p>Some Setting Content</p>
                     </div>
                 )}
+
                 {
                     activeSection === 'users'  && isAdmin && (
-                        <usersTable />
+                        <UsersTable />
                     )
                 }
             </div>
+
             <PasswordChangeModal
                 isOpen={isPasswordModalOpen}
                 onClose= {() => setIsPasswordModalOpen(false)}
-                onSave={() =>{
+                onSave={()=>{
                     console.log("Password Changed Successfully.")
                 }}
             />
         </div>
     )
 }
+
+export default Dashboard;

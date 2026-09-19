@@ -40,7 +40,7 @@ public class UserService {
     public UserDto changePassword(Long id, ChangePasswordDto changePasswordDto){
         User user = userRepository.findById(id).orElseThrow(()-> new RuntimeException("User not found"));
 
-        if(!passwordEncoder.matches(user.getPassword(),changePasswordDto.getCurrentPassword())){
+        if(!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())){
             throw new RuntimeException("current Password is incorrect");
         }
         if(!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmPassword())){

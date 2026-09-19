@@ -64,6 +64,7 @@ public class AuthenticationService {
         User savedUser = userRepository.save(user);
         return convertToUserDTO(savedUser);
     }
+
     public LoginResponseDto login(LoginRequestDto loginRequestDto){
         User user = userRepository.findByUsername(loginRequestDto.getUsername())
                 .orElseThrow(()-> new RuntimeException("Username not found"));
@@ -81,7 +82,7 @@ public class AuthenticationService {
     public ResponseEntity<String> logout(){
         ResponseCookie cookie = ResponseCookie.from("JWT","")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Strict")
@@ -99,6 +100,7 @@ public class AuthenticationService {
         userDto.setId(user.getId());
         userDto.setUsername(user.getUsername());
         userDto.setEmail(user.getEmail());
+        userDto.setRoles(user.getRoles());
 
         return userDto;
     }

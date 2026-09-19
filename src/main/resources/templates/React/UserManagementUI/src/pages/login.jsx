@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import authService from "../services/authService";
 import "../styles/login.css";
 
@@ -36,11 +36,11 @@ const login= ()=>{
                 <form action="" onSubmit={handleLogin}>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
-                        <input type="text" id="username" value={username} onChange={(e)=>setUsername(e.target.value)} required/>
+                        <input type="text" id="username" value={username} onChange={(e)=>setUsername(e.target.value)} autoComplete="username" required/>
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input type="password" id="password" value={password} onChange={(e)=>setPassword(e.target.value)} required/>
+                        <input type="password" id="password" value={password} onChange={(e)=>setPassword(e.target.value)} autoComplete="current-password" required/>
                     </div>
                     <button type="submit" className="login-button">Login</button>
                     <p>
