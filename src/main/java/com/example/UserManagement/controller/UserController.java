@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping("/changepassword/{id}")
-    public ResponseEntity<UserDto> changePassword(@PathVariable Long id, ChangePasswordDto changePasswordDto){
+    public ResponseEntity<UserDto> changePassword(@PathVariable Long id,@RequestBody ChangePasswordDto changePasswordDto){
         return ResponseEntity.ok(userService.changePassword(id,changePasswordDto));
     }
 

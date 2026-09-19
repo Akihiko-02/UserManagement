@@ -49,6 +49,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         User savedUser = userRepository.save(user);
 
+
+        System.out.println("Password is changed!!");
         return convertToUserDTO(savedUser);
     }
 
