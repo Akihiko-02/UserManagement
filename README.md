@@ -268,7 +268,7 @@ The project follows a frontend/backend architecture.
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 ```text
 UserManagement
